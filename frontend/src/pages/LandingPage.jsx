@@ -33,7 +33,7 @@ const LandingPage = () => {
               Ensure authenticity from manufacturer to patient.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link to="/demo" 
+              <Link to="/roles" 
                 className="px-8 py-4 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 
                         transition-all duration-300 flex items-center justify-center gap-2">
                 <LinkIcon size={20} />
@@ -140,7 +140,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
           <h2 className="text-3xl font-bold mb-4 text-white">Join Our Blockchain Network</h2>
           <p className="text-xl mb-8 text-emerald-100">Connect your supply chain to our secure blockchain platform</p>
-          <Link to="/connect" 
+          <Link to="/roles" 
             className="inline-flex items-center px-8 py-4 bg-white text-emerald-600 rounded-lg 
                      hover:bg-emerald-50 transition-all duration-300 font-medium gap-2">
             Connect Now

@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const authController = {
     // Register
     register: (req, res) => {
-        const { username, password, role } = req.body;
+        const { username, email, password, role } = req.body;
 
         // Validasi role
         const validRoles = ['produsen', 'pbf', 'apotek'];
@@ -13,10 +13,10 @@ const authController = {
         }
 
         // Simpan user ke database via model
-        User.create(username, password, role, (err, result) => {
+        User.create(username, email, password, role, (err, result) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') {
-                    return res.status(400).json({ message: 'Username sudah digunakan' });
+                    return res.status(400).json({ message: 'Username atau email sudah digunakan' });
                 }
                 return res.status(500).json({ error: err.message });
             }
@@ -38,7 +38,7 @@ const authController = {
 
             // Buat token JWT
             const token = jwt.sign({ id: user.id, role: user.role }, 'secret_key', { expiresIn: '1h' });
-            res.json({ token, role: user.role, username: user.username }); // Tambah username di response
+            res.json({ token, role: user.role, username: user.username });
         });
     }
 };
