@@ -7,8 +7,11 @@ function Register() {
     const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [error, setError] = useState(''); // Tambah state untuk error
     const { role } = useParams();
     const navigate = useNavigate();
+
+    const validRoles = ['produsen', 'pbf', 'apotek']; // Validasi role
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -16,22 +19,33 @@ function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(''); // Reset error sebelum submit
+
+        // Validasi password
         if (form.password !== form.confirmPassword) {
-            alert('Password dan konfirmasi password tidak cocok');
+            setError('Password dan konfirmasi password tidak cocok');
+            return;
+        }
+
+        // Validasi role dari URL
+        if (!validRoles.includes(role)) {
+            setError('Role tidak valid');
             return;
         }
 
         try {
-            await axios.post('http://localhost:5000/api/auth/register', {
+            const response = await axios.post('http://localhost:5000/api/auth/register', {
                 username: form.username,
                 email: form.email,
                 password: form.password,
-                role
+                role: role,
             });
-            alert('Registrasi berhasil, silakan login');
+
+            alert(response.data.message || 'Registrasi berhasil, silakan login');
             navigate(`/login/${role}`);
         } catch (error) {
-            alert(error.response?.data?.message || 'Terjadi kesalahan saat registrasi');
+            console.error('Registration error:', error.response?.data);
+            setError(error.response?.data?.message || 'Terjadi kesalahan saat registrasi');
         }
     };
 
@@ -46,9 +60,11 @@ function Register() {
     return (
         <div className="flex justify-center items-center min-h-screen bg-green-50">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-                <h1 className="text-2xl font-bold text-center mb-2">Daftar Produsen</h1>
+                <h1 className="text-2xl font-bold text-center mb-2">Daftar {role.charAt(0).toUpperCase() + role.slice(1)}</h1>
                 <p className="text-center text-gray-600 mb-6">Masuk ke dashboard untuk mengelola produk Anda</p>
-                
+
+                {error && <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">{error}</div>}
+
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="email" className="block text-gray-700 mb-2">Email</label>
@@ -83,7 +99,7 @@ function Register() {
                                 type="text"
                                 id="username"
                                 name="username"
-                                placeholder="masukan ussername"
+                                placeholder="Masukkan username"
                                 className="pl-10 w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                                 value={form.username}
                                 onChange={handleChange}
@@ -154,7 +170,7 @@ function Register() {
 
                 <div className="mt-4 text-center">
                     <p className="text-gray-600">
-                        Belum punya akun? <a href={`/login/${role}`} className="text-green-500 hover:underline">Daftar Sekarang</a>
+                        Sudah punya akun? <a href={`/login/${role}`} className="text-green-500 hover:underline">Login Sekarang</a>
                     </p>
                 </div>
 
@@ -167,7 +183,7 @@ function Register() {
                 <button
                     type="button"
                     className="mt-4 w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 hover:bg-gray-50 focus:outline-none"
-                    onClick={() => {/* Google login logic */}}
+                    onClick={() => { /* Google login logic */ }}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 48 48">
                         <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>

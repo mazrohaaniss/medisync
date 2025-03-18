@@ -20,7 +20,7 @@ const SidebarProdusen = ({ isCollapsed, setIsCollapsed }) => {
     { path: "/produsen/manajemen-produksi", icon: <FaCogs />, label: "Manajemen Produksi" },
     { path: "/produsen/pengelolaan-pengiriman", icon: <FaTruck />, label: "Pengelolaan Pengiriman" },
     { path: "/produsen/monitoring-stok", icon: <FaChartLine />, label: "Monitoring Stok" },
-    { path: "/produsen/laporan-analitik", icon: <FaClipboardList />, label: "LaporanAnalitik" },
+    { path: "/produsen/laporan-analitik", icon: <FaClipboardList />, label: "Laporan Analitik" },
   ];
 
   return (

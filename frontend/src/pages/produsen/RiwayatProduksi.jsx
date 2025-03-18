@@ -9,66 +9,63 @@ const RiwayatProduksi = () => {
   const [produksiData, setProduksiData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState(null);
 
   // Fetch data untuk riwayat produksi
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      try {
-        const token = localStorage.getItem('token'); // Opsional, hapus jika autentikasi tidak diperlukan
-        if (!token) {
-          throw new Error('Token tidak ditemukan. Silakan login ulang.');
-        }
+      setError(null);
 
-        const endpoint = '/api/produksi/riwayat';
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Silakan login terlebih dahulu');
+        navigate('/login/produsen');
+        return;
+      }
+
+      try {
+        const endpoint = 'http://localhost:5000/api/produksi/riwayat';
+        console.log('Attempting to fetch from:', endpoint);
         const response = await fetch(endpoint, {
+          method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Tambahkan token ke header
           },
         });
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('Failed to fetch data:', response.status, errorText);
-          throw new Error(`Gagal mengambil data: ${response.status} ${errorText}`);
+          console.error('Fetch failed with status:', response.status, 'Response:', errorText);
+          throw new Error(`Gagal mengambil data: ${response.status} - ${errorText}`);
         }
 
         const result = await response.json();
-        console.log('Data dari API (Riwayat):', result); // Debugging
+        console.log('Raw API response:', result);
+        if (!result.success) {
+          throw new Error('API response unsuccessful: ' + result.message);
+        }
         const data = result.data || [];
+        console.log('Processed data:', data);
         setProduksiData(data);
       } catch (error) {
-        console.error('Error fetching data:', error.message);
+        console.error('Fetch error:', error.message);
+        setError(error.message);
+        if (error.message.includes('Token')) {
+          navigate('/login/produsen'); // Redirect jika token tidak valid
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [navigate]);
 
-  const handleLogout = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (token) {
-        await fetch('/api/auth/logout', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-      }
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
-      navigate('/');
-    } catch (error) {
-      console.error('Error during logout:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
-      navigate('/');
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Hapus token saat logout
+    navigate('/login/produsen'); // Redirect ke login
   };
 
   const filteredData = produksiData.filter(item => {
@@ -142,9 +139,14 @@ const RiwayatProduksi = () => {
             <div className="overflow-x-auto">
               {isLoading ? (
                 <div className="p-4 text-center">Loading...</div>
+              ) : error ? (
+                <div className="p-4 text-center text-red-500">
+                  Error: {error}
+                </div>
               ) : filteredData.length === 0 ? (
                 <div className="p-4 text-center text-gray-500">
                   {searchTerm ? "Tidak ada data yang sesuai dengan pencarian" : "Tidak ada data riwayat produksi"}
+                  <div>Raw data: {JSON.stringify(produksiData)}</div> {/* Debugging */}
                 </div>
               ) : (
                 <table className="min-w-full divide-y divide-gray-200">
@@ -175,7 +177,9 @@ const RiwayatProduksi = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
                               className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                item.prioritas === 'High' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+                                item.prioritas === 'High' ? 'bg-red-100 text-red-800' :
+                                item.prioritas === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-blue-100 text-blue-800'
                               }`}
                             >
                               {item.prioritas}
