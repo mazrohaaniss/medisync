@@ -188,10 +188,18 @@ const ManajemenProduksi = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {item.dokumen_bpom ? (
-                            <a href={`http://localhost:5000/${item.dokumen_bpom}`} target="_blank" rel="noopener noreferrer" className="text-[#18A375] hover:text-[#158c63]">
+                            <a
+                              href={`http://localhost:5000/${item.dokumen_bpom}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#18A375] hover:text-[#158c63]"
+                              onError={() => alert('Dokumen tidak ditemukan')}
+                            >
                               Lihat Dokumen
                             </a>
-                          ) : 'Tidak ada'}
+                          ) : (
+                            'Tidak ada'
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex space-x-2">

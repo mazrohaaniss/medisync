@@ -6,13 +6,12 @@ import NavbarProdusen from './NavbarProdusen';
 
 const DetailProduksi = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Ambil ID dari URL
+  const { id } = useParams();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [produksi, setProduksi] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch data produksi berdasarkan ID
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -57,6 +56,10 @@ const DetailProduksi = () => {
 
   const handleBack = () => {
     navigate('/produsen/manajemen-produksi');
+  };
+
+  const handleDocumentError = () => {
+    alert('Dokumen tidak ditemukan atau tidak dapat diakses.');
   };
 
   if (isLoading) return <div className="p-6 text-center">Loading...</div>;
@@ -142,6 +145,9 @@ const DetailProduksi = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[#18A375] hover:text-[#158c63]"
+                      onClick={() => {
+                        fetch(`http://localhost:5000/${produksi.dokumen_bpom}`).catch(() => handleDocumentError());
+                      }}
                     >
                       Lihat Dokumen
                     </a>
