@@ -11,4 +11,5 @@ router.post('/', authenticateToken, produksiController.create);
 router.put('/:id', authenticateToken, produksiController.update); // Edit
 router.delete('/:id', authenticateToken, produksiController.delete); // Hapus
 
+
 module.exports = router;
